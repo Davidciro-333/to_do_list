@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_list/app/view/app_bar.dart';
-import 'package:to_do_list/app/view/convex_tab.dart';
+import 'package:to_do_list/app/view/components/app_bar.dart';
+import 'package:to_do_list/app/view/components/convex_tab.dart';
 
 class SplashPageExample extends StatelessWidget {
   const SplashPageExample({super.key});
