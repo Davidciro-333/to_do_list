@@ -73,7 +73,6 @@ final taskList = <Task>[
 ];
 
 class _TaskListState extends State<_TaskList> {
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -142,20 +141,18 @@ class _TaskItemState extends State<_TaskItem> {
       onTap: widget.onTap,
       child: Card(
         child: ListTile(
-            title: Text('Task: ${widget.task.title}'),
-            leading: IconButton(onPressed: () {
-              widget.task.isCompleted = !widget.task.isCompleted;
-              Counter.count--;
-              setState(() {
-
-              });
-            }, icon: widget.task.isCompleted
-                ? const Icon(Icons.check_box_rounded)
-                : const Icon(Icons.check_box_outline_blank)
-            ),
-            /*leading: Icon(task.isCompleted
-                ? Icons.check_box_rounded
-                : Icons.check_box_outline_blank)*/
+          title: Text('Task: ${widget.task.title}'),
+          leading: IconButton(
+              onPressed: () {
+                widget.task.isCompleted = !widget.task.isCompleted;
+                if (Counter.count > 0) {
+                  Counter.count--;
+                }
+                setState(() {});
+              },
+              icon: widget.task.isCompleted
+                  ? const Icon(Icons.check_box_rounded)
+                  : const Icon(Icons.check_box_outline_blank)),
         ),
       ),
     );
