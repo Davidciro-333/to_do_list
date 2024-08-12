@@ -3,10 +3,6 @@ import 'package:to_do_list/app/model/task.dart';
 import 'package:to_do_list/app/view/components/shape.dart';
 import 'package:to_do_list/app/view/components/title.dart';
 
-class Counter {
-  static int count = taskList.length;
-}
-
 class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
 
@@ -15,6 +11,8 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
+  final taskList = <Task>[];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,72 +21,158 @@ class _TaskListPageState extends State<TaskListPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const _Header(),
-            Column(
+            const Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 13),
+                  padding: EdgeInsets.only(bottom: 13),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 24, left: 30),
-                        child: TextTitle('Tasks ${Counter.count}'),
+                        padding: EdgeInsets.only(top: 24, left: 30),
+                        child: TextTitle('Tasks'),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const _TaskList(),
+            _TaskList(
+              taskList,
+              onTaskDoneChange: (task) {
+                setState(() {
+                  task.isCompleted = !task.isCompleted;
+                });
+              },
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            Counter.count++;
-          });
-        },
+        onPressed: () => _showTaskModal(context),
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
+
+  void _showTaskModal(BuildContext context) {
+    true;
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _NewTaskModal(
+        onTaskAdded: (Task task) {
+          setState(() {
+            taskList.add(task);
+          });
+        },
+      ),
+      isScrollControlled: true,
+    );
+  }
 }
 
-class _TaskList extends StatefulWidget {
-  const _TaskList();
+class _NewTaskModal extends StatefulWidget {
+  _NewTaskModal({required this.onTaskAdded});
+
+  final void Function(Task task) onTaskAdded;
 
   @override
-  State<_TaskList> createState() => _TaskListState();
+  State<_NewTaskModal> createState() => _NewTaskModalState();
 }
 
-final taskList = <Task>[
-  Task('Sacar la basura'),
-  Task('Lavar baño'),
-  Task('Curso flutter'),
-  Task('Dormir siesta'),
-  Task('Ver pelicula'),
-  Task('Comer'),
-];
+class _NewTaskModalState extends State<_NewTaskModal> {
+  final _controller = TextEditingController();
 
-class _TaskListState extends State<_TaskList> {
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: Container(
+        width: double.maxFinite,
+        height: 228,
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(21)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(top: 24, left: 35),
+              child: TextTitle('New Task'),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 24, left: 35, right: 30),
+              child: TextField(
+                autofocus: true,
+                textInputAction: TextInputAction.go,
+                textCapitalization: TextCapitalization.sentences,
+                keyboardType: TextInputType.text,
+                keyboardAppearance: Brightness.light,
+                controller: _controller,
+                decoration: InputDecoration(
+                  filled: true,
+                  hintText: 'Task name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 24, left: 35, right: 30),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: () {
+                  if (_controller.text.isNotEmpty) {
+                    final task = Task(_controller.text);
+                    widget.onTaskAdded(task);
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Text(
+                  'Add Task',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TaskList extends StatelessWidget {
+  const _TaskList(this.taskList, {required this.onTaskDoneChange});
+
+  final List<Task> taskList;
+  final void Function(Task task) onTaskDoneChange;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: ListView.separated(
-          itemBuilder: (_, index) => _TaskItem(taskList[index], onTap: () {
-                taskList[index].isCompleted = !taskList[index].isCompleted;
-                setState(() {
-                  //Counter.count--;
-                });
-              }),
-          separatorBuilder: (_, __) =>
-              const Padding(padding: EdgeInsets.only(top: 16)),
-          itemCount: taskList.length),
-    ));
+      child: Padding(
+        padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+        child: ListView.separated(
+            itemBuilder: (_, index) => _TaskItem(
+                  taskList[index],
+                  onTap: () => onTaskDoneChange(taskList[index]),
+                ),
+            separatorBuilder: (_, __) =>
+                const Padding(padding: EdgeInsets.only(top: 16)),
+            itemCount: taskList.length),
+      ),
+    );
   }
 }
 
@@ -141,18 +225,13 @@ class _TaskItemState extends State<_TaskItem> {
       onTap: widget.onTap,
       child: Card(
         child: ListTile(
-          title: Text('Task: ${widget.task.title}'),
-          leading: IconButton(
-              onPressed: () {
-                widget.task.isCompleted = !widget.task.isCompleted;
-                if (Counter.count > 0) {
-                  Counter.count--;
-                }
-                setState(() {});
-              },
-              icon: widget.task.isCompleted
-                  ? const Icon(Icons.check_box_rounded)
-                  : const Icon(Icons.check_box_outline_blank)),
+          title: Text(widget.task.title),
+          leading: Icon(
+            widget.task.isCompleted
+                ? Icons.check
+                : Icons.check_box_outline_blank,
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
       ),
     );

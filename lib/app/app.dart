@@ -23,6 +23,18 @@ class MyApp extends StatelessWidget {
             bodyColor: textColor,
             displayColor: textColor
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          )
+        ),
       ),
       debugShowCheckedModeBanner: false,
       home: const SplashPage(),
