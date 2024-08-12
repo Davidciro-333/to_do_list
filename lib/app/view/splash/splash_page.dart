@@ -65,7 +65,7 @@ class SplashPage extends StatelessWidget {
 }
 
 final List<Uri> _url = [
-  Uri.parse('https://policies.google.com/terms?hl=en'),
+  Uri.parse('https://docs.flutter.dev/tos'),
   Uri.parse('https://policies.google.com/privacy?hl=en'),
 ];
 
