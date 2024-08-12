@@ -4,20 +4,19 @@ import 'package:to_do_list/app/repository/task_repository.dart';
 import 'package:to_do_list/app/view/components/shape.dart';
 import 'package:to_do_list/app/view/components/title.dart';
 
-class TaskListPage extends StatefulWidget {
-  const TaskListPage({super.key});
+class TaskListPageExample extends StatefulWidget {
+  const TaskListPageExample({super.key});
 
   @override
-  State<TaskListPage> createState() => _TaskListPageState();
+  State<TaskListPageExample> createState() => _TaskListPageExampleState();
 }
 
-class _TaskListPageState extends State<TaskListPage> {
+class _TaskListPageExampleState extends State<TaskListPageExample> {
   final taskList = <Task>[];
   final TaskRepository taskRepository = TaskRepository();
 
   @override
   void initState() {
-
     super.initState();
   }
 
@@ -47,30 +46,28 @@ class _TaskListPageState extends State<TaskListPage> {
             ),
             Expanded(
               child: FutureBuilder(
-                future: taskRepository.getTasks(),
-                builder: (context, snapshot) {
-                  //if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+                  future: taskRepository.getTasks(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasError) return const Center(child: Text('Error'));
 
-                  if (snapshot.hasError) return const Center(child: Text('Error'));
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) return const Center(child: Text('No tasks'));
 
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) return const Center(child: Text('No tasks'));
-
-                  return _TaskList(
-                    snapshot.data!,
-                    onTaskDoneChange: (task) {
-                      setState(() {
-                        task.isCompleted = !task.isCompleted;
-                        taskRepository.saveTasks(snapshot.data!);
-                      });
-                    },
-                    onTaskDeleted: (task) {
-                      setState(() {
-                        taskList.remove(task);
-                        taskRepository.saveTasks(taskList);
-                      });
-                    },
-                  );
-                }
+                    return _TaskList(
+                      snapshot.data!,
+                      onTaskDoneChange: (task) {
+                        setState(() {
+                          task.isCompleted = !task.isCompleted;
+                          taskRepository.saveTasks(snapshot.data!);
+                        });
+                      },
+                      onTaskDeleted: (task) {
+                        setState(() {
+                          taskList.remove(task);
+                          taskRepository.saveTasks(taskList);
+                        });
+                      },
+                    );
+                  }
               ),
             ),
           ],
@@ -85,18 +82,110 @@ class _TaskListPageState extends State<TaskListPage> {
   }
 
   void _showTaskModal(BuildContext context) {
-    true;
     showModalBottomSheet(
       context: context,
       builder: (_) => _NewTaskModal(
         onTaskAdded: (Task task) {
-          taskRepository.addTask(task);
           setState(() {
             taskList.add(task);
+            taskRepository.saveTasks(taskList);
           });
         },
       ),
       isScrollControlled: true,
+    );
+  }
+}
+
+class _TaskList extends StatelessWidget {
+  const _TaskList(this.taskList, {required this.onTaskDoneChange, required this.onTaskDeleted});
+
+  final List<Task> taskList;
+  final void Function(Task task) onTaskDoneChange;
+  final void Function(Task task) onTaskDeleted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+      child: ListView.separated(
+          itemBuilder: (_, index) => _TaskItem(
+            taskList[index],
+            onTaskDoneChange: () => onTaskDoneChange(taskList[index]),
+            onTaskDeleted: () => onTaskDeleted(taskList[index]),
+          ),
+          separatorBuilder: (_, __) =>
+          const Padding(padding: EdgeInsets.only(top: 16)),
+          itemCount: taskList.length),
+    );
+  }
+}
+
+class _TaskItem extends StatefulWidget {
+  const _TaskItem(this.task, {this.onTaskDoneChange, this.onTaskDeleted});
+
+  final Task task;
+  final VoidCallback? onTaskDoneChange;
+  final VoidCallback? onTaskDeleted;
+
+  @override
+  State<_TaskItem> createState() => _TaskItemState();
+}
+
+class _TaskItemState extends State<_TaskItem> {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: widget.onTaskDoneChange,
+      child: Card(
+        child: ListTile(
+          title: Text(widget.task.title),
+          //subtitle: Text(widget.task.isCompleted ? 'Completed' : 'Pending'),
+          subtitle: Text(widget.task.description),
+          leading: Icon(
+            widget.task.isCompleted
+                ? Icons.check
+                : Icons.check_box_outline_blank,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+          trailing: IconButton(
+            icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.primary,),
+            onPressed: widget.onTaskDeleted,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Header extends StatelessWidget {
+  const _Header();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.maxFinite,
+      color: Theme.of(context).colorScheme.primary,
+      child: Column(
+        children: [
+          const Row(
+            //mainAxisAlignment: MainAxisAlignment.start,
+              children: [Shape()]),
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Image.asset('assets/images/tasks-list-image.png',
+                    width: 120, height: 120),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(bottom: 24),
+                child: TextTitle('Complete your tasks', color: Colors.white),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }
@@ -194,99 +283,6 @@ class _NewTaskModalState extends State<_NewTaskModal> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TaskList extends StatelessWidget {
-  const _TaskList(this.taskList, {required this.onTaskDoneChange, required this.onTaskDeleted});
-
-  final List<Task> taskList;
-  final void Function(Task task) onTaskDoneChange;
-  final void Function(Task task) onTaskDeleted;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
-      child: ListView.separated(
-          itemBuilder: (_, index) => _TaskItem(
-            taskList[index],
-            onTaskDoneChange: () => onTaskDoneChange(taskList[index]),
-            onTaskDeleted: () => onTaskDeleted(taskList[index]),
-          ),
-          separatorBuilder: (_, __) =>
-          const Padding(padding: EdgeInsets.only(top: 16)),
-          itemCount: taskList.length),
-    );
-  }
-}
-
-class _Header extends StatelessWidget {
-  const _Header();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.maxFinite,
-      color: Theme.of(context).colorScheme.primary,
-      child: Column(
-        children: [
-          const Row(
-              //mainAxisAlignment: MainAxisAlignment.start,
-              children: [Shape()]),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: Image.asset('assets/images/tasks-list-image.png',
-                    width: 120, height: 120),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 24),
-                child: TextTitle('Complete your tasks', color: Colors.white),
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-}
-
-class _TaskItem extends StatefulWidget {
-  const _TaskItem(this.task, {this.onTaskDoneChange, this.onTaskDeleted});
-
-  final Task task;
-  final VoidCallback? onTaskDoneChange;
-  final VoidCallback? onTaskDeleted;
-
-  @override
-  State<_TaskItem> createState() => _TaskItemState();
-}
-
-class _TaskItemState extends State<_TaskItem> {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: widget.onTaskDoneChange,
-      child: Card(
-        child: ListTile(
-          title: Text(widget.task.title),
-          //subtitle: Text(widget.task.isCompleted ? 'Completed' : 'Pending'),
-          subtitle: Text(widget.task.description),
-          leading: Icon(
-            widget.task.isCompleted
-                ? Icons.check
-                : Icons.check_box_outline_blank,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.delete, color: Theme.of(context).colorScheme.primary,),
-            onPressed: widget.onTaskDeleted,
-          ),
         ),
       ),
     );
