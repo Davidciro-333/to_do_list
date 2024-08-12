@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/app/model/task.dart';
+import 'package:to_do_list/app/repository/task_repository.dart';
 import 'package:to_do_list/app/view/components/shape.dart';
 import 'package:to_do_list/app/view/components/title.dart';
 
@@ -12,6 +13,13 @@ class TaskListPage extends StatefulWidget {
 
 class _TaskListPageState extends State<TaskListPage> {
   final taskList = <Task>[];
+  final TaskRepository taskRepository = TaskRepository();
+
+  @override
+  void initState() {
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,13 +45,27 @@ class _TaskListPageState extends State<TaskListPage> {
                 ),
               ],
             ),
-            _TaskList(
-              taskList,
-              onTaskDoneChange: (task) {
-                setState(() {
-                  task.isCompleted = !task.isCompleted;
-                });
-              },
+            Expanded(
+              child: FutureBuilder(
+                future: taskRepository.getTasks(),
+                builder: (context, snapshot) {
+                  //if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
+
+                  if (snapshot.hasError) return const Center(child: Text('Error'));
+
+                  if (!snapshot.hasData || snapshot.data!.isEmpty) return const Center(child: Text('No tasks'));
+
+                  return _TaskList(
+                    snapshot.data!,
+                    onTaskDoneChange: (task) {
+                      setState(() {
+                        task.isCompleted = !task.isCompleted;
+                        taskRepository.saveTasks(snapshot.data!);
+                      });
+                    },
+                  );
+                }
+              ),
             ),
           ],
         ),
@@ -62,6 +84,7 @@ class _TaskListPageState extends State<TaskListPage> {
       context: context,
       builder: (_) => _NewTaskModal(
         onTaskAdded: (Task task) {
+          taskRepository.addTask(task);
           setState(() {
             taskList.add(task);
           });
@@ -156,22 +179,21 @@ class _TaskList extends StatelessWidget {
   const _TaskList(this.taskList, {required this.onTaskDoneChange});
 
   final List<Task> taskList;
+
   final void Function(Task task) onTaskDoneChange;
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
-        child: ListView.separated(
-            itemBuilder: (_, index) => _TaskItem(
-                  taskList[index],
-                  onTap: () => onTaskDoneChange(taskList[index]),
-                ),
-            separatorBuilder: (_, __) =>
-                const Padding(padding: EdgeInsets.only(top: 16)),
-            itemCount: taskList.length),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(left: 30, right: 30, bottom: 30),
+      child: ListView.separated(
+          itemBuilder: (_, index) => _TaskItem(
+                taskList[index],
+                onTap: () => onTaskDoneChange(taskList[index]),
+              ),
+          separatorBuilder: (_, __) =>
+              const Padding(padding: EdgeInsets.only(top: 16)),
+          itemCount: taskList.length),
     );
   }
 }
