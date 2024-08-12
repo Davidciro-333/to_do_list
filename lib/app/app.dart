@@ -35,6 +35,14 @@ class MyApp extends StatelessWidget {
             ),
           )
         ),
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+            padding: WidgetStateProperty.all<EdgeInsetsGeometry>(
+              const EdgeInsets.symmetric(horizontal: 4),
+            ),
+          )
+
+        )
       ),
       debugShowCheckedModeBanner: false,
       home: const SplashPage(),
