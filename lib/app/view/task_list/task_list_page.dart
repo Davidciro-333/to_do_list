@@ -69,12 +69,10 @@ class _TaskListPageState extends State<TaskListPage> {
                     // if (snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator());
 
                     // Displays an error message if there is an error.
-                    if (snapshot.hasError)
-                      return const Center(child: Text('Error'));
+                    if (snapshot.hasError) return const Center(child: Text('Error'));
 
                     // Displays a message if there are no tasks.
-                    if (!snapshot.hasData || snapshot.data!.isEmpty)
-                      return const Center(child: Text('No tasks'));
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) return const Center(child: Text('No tasks'));
 
                     // Displays the list of tasks.
                     return _TaskList(

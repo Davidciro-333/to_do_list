@@ -65,12 +65,10 @@ class _TaskListPageExampleState extends State<TaskListPageExample> {
                   future: taskRepository.getTasks(),
                   builder: (context, snapshot) {
                     // Displays an error message if there is an error.
-                    if (snapshot.hasError)
-                      return const Center(child: Text('Error'));
+                    if (snapshot.hasError) return const Center(child: Text('Error'));
 
                     // Displays a message if there are no tasks.
-                    if (!snapshot.hasData || snapshot.data!.isEmpty)
-                      return const Center(child: Text('No tasks'));
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) return const Center(child: Text('No tasks'));
 
                     // Displays the list of tasks.
                     return _TaskList(
