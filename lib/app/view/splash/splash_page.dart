@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/app/view/components/title.dart';
 import 'package:to_do_list/app/view/home/inherited_widgets.dart';
-import 'package:to_do_list/app/view/home/state_dif.dart';
+//import 'package:to_do_list/app/view/home/state_dif.dart';
 import 'package:to_do_list/app/view/task_list/task_list_page.dart';
 //import 'package:to_do_list/app/view/task_list/task_list_page_example.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 import '../components/shape.dart';
 
 /// A stateless widget that represents the splash page of the application.
@@ -52,8 +53,8 @@ return Scaffold(
           onPressed: () {
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) {
-              return const StateDif();
-            }));
+                  return const TaskListPage();
+                }));
           },
           style: ButtonStyle(
             padding: WidgetStateProperty.all<EdgeInsetsGeometry>(

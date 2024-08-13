@@ -45,7 +45,8 @@ class _EmailText extends StatelessWidget {
       return Text(
           'Email written in the text field will be displayed here ${emailDisplay.email}');
     });
-    // Retrieves the email from the inherited widget.
+
+    /// Retrieves the email from the inherited widget.
   }
 }
 
@@ -57,21 +58,25 @@ class _SendButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: () {},
       style: ElevatedButton.styleFrom(
-        // Sets the minimum size of the button.
+        /// Sets the minimum size of the button.
         minimumSize: const Size(double.infinity, 50),
-        // Sets the background color of the button.
+
+        /// Sets the background color of the button.
         backgroundColor: Theme.of(context).colorScheme.primary,
-        // Adds rounded corners to the button.
+
+        /// Adds rounded corners to the button.
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
-        // Sets the text style of the button.
+
+        /// Sets the text style of the button.
         textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontSize: 18,
               fontWeight: FontWeight.w700,
             ),
       ),
-      // The text displayed on the button.
+
+      /// The text displayed on the button.
       child: const Text('Send', style: TextStyle(color: Colors.white)),
     );
   }
@@ -85,17 +90,19 @@ class _EmailTextField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: TextField(
-        // Updates the email variable when the text changes.
+        /// Updates the email variable when the text changes.
         onChanged: (value) => context.read<_EmailDisplay>().email = value,
         decoration: const InputDecoration(
-          // Fills the input field with white color.
+          /// Fills the input field with white color.
           filled: true,
           fillColor: Colors.white,
-          // Adds an outline border with rounded corners.
+
+          /// Adds an outline border with rounded corners.
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
-          // Placeholder text for the input field.
+
+          /// Placeholder text for the input field.
           hintText: 'Email',
         ),
       ),

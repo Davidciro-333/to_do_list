@@ -8,8 +8,8 @@ class SpecialColor extends InheritedWidget {
   const SpecialColor({
     super.key,
     required this.color,
-    required Widget child,
-  }) : super(child: child);
+    required super.child,
+  });
 
   /// The color to be provided to the descendants.
   final Color color;
