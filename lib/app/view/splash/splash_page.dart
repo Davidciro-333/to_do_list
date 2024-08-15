@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_list/app/view/components/title.dart';
+import 'package:to_do_list/app/view/counter/counter_page.dart';
 import 'package:to_do_list/app/view/home/inherited_widgets.dart';
-//import 'package:to_do_list/app/view/home/state_dif.dart';
-import 'package:to_do_list/app/view/task_list/task_list_page.dart';
-//import 'package:to_do_list/app/view/task_list/task_list_page_example.dart';
+///import 'package:to_do_list/app/view/home/state_dif.dart';
+///import 'package:to_do_list/app/view/task_list/task_list_page.dart';
+///import 'package:to_do_list/app/view/task_list/task_list_page_example.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../components/shape.dart';
@@ -19,24 +20,24 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 return Scaffold(
-  // A widget that provides a safe area for the content.
+  /// A widget that provides a safe area for the content.
   body: SafeArea(
     child: Column(
       children: [
-        // A row containing a custom shape widget.
+        /// A row containing a custom shape widget.
         const Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [Shape()]),
-        // Padding around the onboarding image.
+        /// Padding around the onboarding image.
         Padding(
           padding: const EdgeInsets.only(top: 72, bottom: 100),
           child: Image.asset(
             'assets/images/onboarding-image.png',
           ),
         ),
-        // A custom title widget for the task list.
+        /// A custom title widget for the task list.
         const TextTitle('Task list'),
-        // Padding around the description text.
+        /// Padding around the description text.
         const Padding(
           padding: EdgeInsets.only(top: 21, left: 32, right: 32),
           child: Text(
@@ -48,12 +49,12 @@ return Scaffold(
             ),
           ),
         ),
-        // A button to navigate to the StateDif page.
+        /// A button to navigate to the StateDif page.
         TextButton(
           onPressed: () {
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) {
-                  return const TaskListPage();
+                  return CounterPage();
                 }));
           },
           style: ButtonStyle(
@@ -67,9 +68,9 @@ return Scaffold(
         /// A text widget that displays the color provided by the inherited widget.
         Text('Inherited widget', style: TextStyle(color: SpecialColor.of(context).color)),
 
-        // A spacer to push the following row to the bottom.
+        /// A spacer to push the following row to the bottom.
         const Spacer(),
-        // A row containing buttons for terms of service and privacy policy.
+        /// A row containing buttons for terms of service and privacy policy.
         const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

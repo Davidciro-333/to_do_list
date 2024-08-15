@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
           // Define the theme for elevated buttons.
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
+              //minimumSize: const Size(double.infinity, 50),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),

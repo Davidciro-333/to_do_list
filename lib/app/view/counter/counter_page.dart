@@ -1,52 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:to_do_list/app/view/counter/counter_provider.dart';
 
-class CounterPage extends StatefulWidget {
+class CounterPage extends StatelessWidget {
   const CounterPage({super.key});
 
   @override
-  State<CounterPage> createState() => _CounterPageState();
-}
-
-class _CounterPageState extends State<CounterPage> {
-  int _counter = 0;
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Count $_counter'),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_counter < 10) {
-                        _counter++;
-                      }
-
-                    });
-                  },
-                  child: const Icon(Icons.add_circle),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      if (_counter > 0) {
-                        _counter--;
-                      }
-                    });
-                  },
-                  //child: const Icon(Icons.exposure_minus_1_rounded),
-                  child: const Icon(Icons.do_not_disturb_on_rounded),
-                )
-              ],
-            ),
-          ],
+    return ChangeNotifierProvider(
+      create: (_) => CounterProvider()..increment(),
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Consumer<CounterProvider>(
+                builder: (context, counterProvider, child) {
+                  return Text('Count ${counterProvider.counter}');
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Builder(
+                    builder: (context) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          if (context.read<CounterProvider>().counter < 10) {
+                            context.read<CounterProvider>().increment();
+                          }
+                        },
+                        child: const Icon(Icons.add_circle),
+                      );
+                    }
+                  ),
+                  Builder(
+                    builder: (context) {
+                      return ElevatedButton(
+                        onPressed: () {
+                          if (context.read<CounterProvider>().counter > 0) {
+                            context.read<CounterProvider>().decrement();
+                          }
+                        },
+                        //child: const Icon(Icons.exposure_minus_1_rounded),
+                        child: const Icon(Icons.do_not_disturb_on_rounded),
+                      );
+                    }
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
